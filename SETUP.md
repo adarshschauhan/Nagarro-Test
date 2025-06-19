@@ -2,19 +2,19 @@
 
 A modern retail inventory management system built with React, TypeScript, and Tailwind CSS using mock data for demonstration purposes.
 
-## 🚀 Features
+## Features
 
-- **🏠 Home Page** with featured products and special offers
-- **🔍 Product Search & Filtering** by category, price, color, and discounts
-- **📱 Product Showcase** with detailed product information
-- **🛒 Shopping Cart** functionality with quantity management
-- **💳 Payment Integration** with Stripe (mock implementation)
-- **🎯 Latest Offers** system with promotional campaigns
-- **👤 User Authentication** (mock implementation)
-- **📋 Order Management** and history
-- **🎨 Modern UI** with responsive design
+- 🏠 **Home Page** with featured products and special offers
+- 🔍 **Product Search & Filtering** by category, price, color, and discounts
+- 📱 **Product Showcase** with detailed product information
+- 🛒 **Shopping Cart** functionality with quantity management
+- 💳 **Payment Integration** with Stripe (mock implementation)
+- 🎯 **Latest Offers** system with promotional campaigns
+- 👤 **User Authentication** (mock implementation)
+- 📋 **Order Management** and history
+- 🎨 **Modern UI** with responsive design
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React 18** with TypeScript
@@ -31,7 +31,7 @@ A modern retail inventory management system built with React, TypeScript, and Ta
 - Special offers and promotions
 - Payment processing simulation
 
-## ⚡ Quick Start
+## Quick Start
 
 ### Prerequisites
 - Node.js (v16 or higher)
@@ -46,23 +46,8 @@ A modern retail inventory management system built with React, TypeScript, and Ta
    ```
 
 2. **Install dependencies**
-   
-   **Windows:**
    ```bash
-   install.bat
-   ```
-   
-   **Unix/Mac:**
-   ```bash
-   chmod +x install.sh
-   ./install.sh
-   ```
-   
-   **Manual:**
-   ```bash
-   cd client
-   npm install
-   cd ..
+   npm run setup
    ```
 
 3. **Start the development server**
@@ -73,7 +58,7 @@ A modern retail inventory management system built with React, TypeScript, and Ta
 4. **Open your browser**
    Navigate to `http://localhost:3000`
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 rimss/
@@ -88,12 +73,10 @@ rimss/
 │   ├── package.json
 │   └── tailwind.config.js
 ├── package.json
-├── install.bat            # Windows installation script
-├── install.sh             # Unix installation script
 └── README.md
 ```
 
-## 🎯 Mock Data
+## Mock Data
 
 The application uses comprehensive mock data including:
 
@@ -116,13 +99,13 @@ The application uses comprehensive mock data including:
 - Special promotional offers
 - Discount campaigns
 
-## 📋 Available Scripts
+## Available Scripts
 
 - `npm start` - Start the development server
 - `npm run build` - Build for production
 - `npm run setup` - Install all dependencies
 
-## 🎨 Features in Detail
+## Features in Detail
 
 ### Product Management
 - Browse products with advanced filtering
@@ -148,7 +131,7 @@ The application uses comprehensive mock data including:
 - Register new accounts
 - User profile management
 
-## 🔧 Development
+## Development
 
 ### Adding New Products
 Edit `client/src/data/mockData.ts` to add new products to the mock catalog.
@@ -161,7 +144,7 @@ The application uses Tailwind CSS. Modify `client/tailwind.config.js` for custom
 - Create reusable components in `client/src/components/`
 - Update mock data in `client/src/data/mockData.ts`
 
-## 🚀 Deployment
+## Deployment
 
 ### Build for Production
 ```bash
@@ -177,7 +160,7 @@ The application can be deployed to any static hosting service:
 - GitHub Pages
 - AWS S3
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -185,21 +168,10 @@ The application can be deployed to any static hosting service:
 4. Test thoroughly
 5. Submit a pull request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
-## 🆘 Support
+## Support
 
-For support or questions, please open an issue in the repository.
-
-## 🎉 Demo
-
-The application includes a complete demo with:
-- Sample products across multiple categories
-- Working shopping cart functionality
-- Mock payment processing
-- User authentication flow
-- Order management system
-
-All data is stored locally and resets when the page is refreshed. 
+For support or questions, please open an issue in the repository. 
