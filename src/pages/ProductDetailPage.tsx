@@ -88,7 +88,6 @@ const ProductDetailPage: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-            {/* Product Images */}
             <div>
               <div className="mb-4">
                 <img
@@ -118,7 +117,6 @@ const ProductDetailPage: React.FC = () => {
               )}
             </div>
 
-            {/* Product Info */}
             <div>
               <div className="mb-4">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
@@ -149,7 +147,6 @@ const ProductDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Color Selection */}
               {product.colors.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold mb-2">Color</h3>
@@ -171,7 +168,6 @@ const ProductDetailPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Size Selection */}
               {product.sizes.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold mb-2">Size</h3>
@@ -193,7 +189,6 @@ const ProductDetailPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Quantity */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-2">Quantity</h3>
                 <div className="flex items-center space-x-4">
@@ -214,7 +209,6 @@ const ProductDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Add to Cart */}
               <div className="space-y-4">
                 <button
                   onClick={handleAddToCart}
@@ -236,7 +230,6 @@ const ProductDetailPage: React.FC = () => {
                 </Link>
               </div>
 
-              {/* Product Details */}
               <div className="mt-8 pt-8 border-t border-gray-200">
                 <h3 className="text-lg font-semibold mb-4">Product Details</h3>
                 <div className="space-y-2 text-sm text-gray-600">

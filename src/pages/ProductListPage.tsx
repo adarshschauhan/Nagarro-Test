@@ -86,10 +86,8 @@ const ProductListPage: React.FC = () => {
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold mb-8">All Products</h1>
 
-        {/* Filters */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-            {/* Search */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
               <input
@@ -101,7 +99,6 @@ const ProductListPage: React.FC = () => {
               />
             </div>
 
-            {/* Category */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
               <select
@@ -117,7 +114,6 @@ const ProductListPage: React.FC = () => {
               </select>
             </div>
 
-            {/* Min Price */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Min Price</label>
               <input
@@ -129,7 +125,6 @@ const ProductListPage: React.FC = () => {
               />
             </div>
 
-            {/* Max Price */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Max Price</label>
               <input
@@ -141,7 +136,6 @@ const ProductListPage: React.FC = () => {
               />
             </div>
 
-            {/* Color */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
               <input
@@ -153,7 +147,6 @@ const ProductListPage: React.FC = () => {
               />
             </div>
 
-            {/* Discounted Only */}
             <div className="flex items-center">
               <label className="flex items-center">
                 <input
@@ -177,7 +170,6 @@ const ProductListPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Products Grid */}
         {products.length === 0 ? (
           <div className="text-center py-12">
             <h3 className="text-xl text-gray-600">No products found</h3>

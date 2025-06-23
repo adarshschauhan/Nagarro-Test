@@ -82,7 +82,6 @@ const ProfilePage: React.FC = () => {
       <h1 className="text-2xl font-bold mb-6">Profile</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Profile Information */}
         <div>
           <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -221,7 +220,6 @@ const ProfilePage: React.FC = () => {
           </form>
         </div>
 
-        {/* Account Information */}
         <div>
           <h2 className="text-xl font-semibold mb-4">Account Information</h2>
           <div className="bg-white rounded-lg shadow-sm border p-6 space-y-4">

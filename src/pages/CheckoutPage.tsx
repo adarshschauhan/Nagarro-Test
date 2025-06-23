@@ -30,14 +30,12 @@ const CheckoutPage: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    // Validate phone number (10 digits)
     if (name === 'phone') {
       const phoneNumber = value.replace(/\D/g, '').slice(0, 10);
       setFormData(prev => ({ ...prev, phone: phoneNumber }));
       return;
     }
 
-    // Validate PIN code (6 digits)
     if (name === 'pinCode') {
       const pinCode = value.replace(/\D/g, '').slice(0, 6);
       setFormData(prev => ({ ...prev, pinCode }));
@@ -48,13 +46,11 @@ const CheckoutPage: React.FC = () => {
   };
 
   const validateForm = () => {
-    // Phone number validation (10 digits)
     if (!/^\d{10}$/.test(formData.phone)) {
       alert('Please enter a valid 10-digit phone number');
       return false;
     }
 
-    // PIN code validation (6 digits)
     if (!/^\d{6}$/.test(formData.pinCode)) {
       alert('Please enter a valid 6-digit PIN code');
       return false;
@@ -78,11 +74,9 @@ const CheckoutPage: React.FC = () => {
     setLoading(true);
 
     try {
-      // Simulate payment processing
       const paymentResult = await paymentApi.confirmPayment('mock_payment_intent');
       
       if (paymentResult.success) {
-        // Create order
         const orderData = {
           totalAmount: getTotalPrice(),
           shippingAddress: {
@@ -134,7 +128,6 @@ const CheckoutPage: React.FC = () => {
         <h1 className="text-3xl font-bold mb-8">Checkout</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Order Summary */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
             <div className="space-y-4">
@@ -168,12 +161,10 @@ const CheckoutPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Checkout Form */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4">Shipping & Payment</h2>
             
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Personal Information */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -232,7 +223,6 @@ const CheckoutPage: React.FC = () => {
                 />
               </div>
 
-              {/* Shipping Address */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Address (House No, Building, Street, Area)
@@ -311,7 +301,6 @@ const CheckoutPage: React.FC = () => {
                 </select>
               </div>
 
-              {/* Payment Information */}
               <div className="border-t pt-4">
                 <h3 className="text-lg font-semibold mb-4">Payment Information</h3>
                 

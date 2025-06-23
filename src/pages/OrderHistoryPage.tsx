@@ -105,7 +105,6 @@ const OrderHistoryPage: React.FC = () => {
         <div className="space-y-6">
           {orders.map((order) => (
             <div key={order._id} className="bg-white rounded-lg shadow-sm border">
-              {/* Order Header */}
               <div className="p-6 border-b">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div>
@@ -128,7 +127,6 @@ const OrderHistoryPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Order Items */}
               <div className="p-6">
                 <h4 className="font-semibold mb-4">Items</h4>
                 <div className="space-y-3">
@@ -152,7 +150,6 @@ const OrderHistoryPage: React.FC = () => {
                   ))}
                 </div>
 
-                {/* Order Details */}
                 <div className="mt-6 pt-4 border-t">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>

@@ -79,7 +79,6 @@ export interface Offer {
   image: string;
 }
 
-// Mock Products Data
 export const mockProducts: Product[] = [
   {
     _id: '1',
@@ -259,7 +258,6 @@ export const mockProducts: Product[] = [
   }
 ];
 
-// Mock User Data
 export const mockUser: User = {
   _id: 'user1',
   firstName: 'John',
@@ -280,7 +278,6 @@ export const mockUser: User = {
   isActive: true
 };
 
-// Mock Cart Data
 export const mockCart: CartItem[] = [
   // {
   //   _id: 'cart1',
@@ -361,7 +358,6 @@ export const mockOrders: Order[] = [
   }
 ];
 
-// Mock Offers Data
 export const mockOffers: Offer[] = [
   {
     _id: 'offer1',
@@ -401,11 +397,8 @@ export const mockOffers: Offer[] = [
   }
 ];
 
-// Mock API functions
 export const mockApi = {
-  // Products
   getProducts: async (filters?: any): Promise<Product[]> => {
-    // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
     let filteredProducts = [...mockProducts];
@@ -456,14 +449,12 @@ export const mockApi = {
     return mockProducts.filter(p => p.isFeatured);
   },
   
-  // Categories
   getCategories: async (): Promise<string[]> => {
     await new Promise(resolve => setTimeout(resolve, 200));
     const categories = [...new Set(mockProducts.map(p => p.category))];
     return ['All', ...categories];
   },
   
-  // Cart
   getCart: async (): Promise<CartItem[]> => {
     await new Promise(resolve => setTimeout(resolve, 300));
     return [...mockCart];
@@ -547,7 +538,6 @@ export const mockApi = {
     mockCart.length = 0;
   },
   
-  // Orders
   getOrders: async (): Promise<Order[]> => {
     await new Promise(resolve => setTimeout(resolve, 500));
     return mockOrders;
@@ -574,13 +564,11 @@ export const mockApi = {
     return newOrder;
   },
   
-  // Offers
   getOffers: async (): Promise<Offer[]> => {
     await new Promise(resolve => setTimeout(resolve, 400));
     return mockOffers.filter(offer => offer.isActive);
   },
   
-  // Auth
   login: async (email: string, password: string): Promise<{ user: User; token: string }> => {
     await new Promise(resolve => setTimeout(resolve, 500));
     if (email === 'john.doe@example.com' && password === 'password123') {
@@ -615,7 +603,6 @@ export const mockApi = {
   }
 };
 
-// Indian States and Union Territories
 export const indianStates = [
   'Andhra Pradesh',
   'Arunachal Pradesh',
