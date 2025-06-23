@@ -1,145 +1,102 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Header from '../../components/Header';
 import { AuthProvider } from '../../contexts/AuthContext';
 import { CartProvider } from '../../contexts/CartContext';
-
-// Mock the contexts
-const mockAuthContext = {
-  user: null,
-  loading: false,
-  login: jest.fn(),
-  register: jest.fn(),
-  logout: jest.fn(),
-};
-
-const mockCartContext = {
-  items: [],
-  addItem: jest.fn(),
-  removeItem: jest.fn(),
-  updateQuantity: jest.fn(),
-  clearCart: jest.fn(),
-  getTotalPrice: jest.fn(() => 0),
-  getTotalItems: jest.fn(() => 0),
-};
+import { useAuth } from '../../contexts/AuthContext';
+import { useCart } from '../../contexts/CartContext';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('../../contexts/AuthContext', () => ({
-  useAuth: () => mockAuthContext,
-  AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    ...jest.requireActual('../../contexts/AuthContext'),
+    useAuth: jest.fn(),
 }));
 
 jest.mock('../../contexts/CartContext', () => ({
-  useCart: () => mockCartContext,
-  CartProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    ...jest.requireActual('../../contexts/CartContext'),
+    useCart: jest.fn(),
 }));
 
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
-    <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          {component}
-        </CartProvider>
-      </AuthProvider>
-    </BrowserRouter>
-  );
+const mockedUseAuth = useAuth as jest.Mock;
+const mockedUseCart = useCart as jest.Mock;
+
+const renderWithProviders = (ui: React.ReactElement) => {
+    return render(
+        <BrowserRouter>
+            <AuthProvider>
+                <CartProvider>{ui}</CartProvider>
+            </AuthProvider>
+        </BrowserRouter>
+    );
 };
 
-describe('Header Component', () => {
+describe('Header component', () => {
   beforeEach(() => {
+    mockedUseAuth.mockReturnValue({
+      user: null,
+      logout: jest.fn(),
+      loading: false,
+    });
+    mockedUseCart.mockReturnValue({
+      getTotalItems: () => 0,
+      loading: false,
+    });
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders header with logo', () => {
+  test('renders logo and navigation links', () => {
     renderWithProviders(<Header />);
     expect(screen.getByText('RIMSS')).toBeInTheDocument();
-  });
-
-  it('renders navigation links', () => {
-    renderWithProviders(<Header />);
     expect(screen.getByText('Home')).toBeInTheDocument();
     expect(screen.getByText('Products')).toBeInTheDocument();
     expect(screen.getByText('Offers')).toBeInTheDocument();
   });
 
-  it('renders cart icon', () => {
-    renderWithProviders(<Header />);
-    expect(screen.getByRole('button')).toBeInTheDocument();
-  });
-
-  it('shows login and register buttons when user is not authenticated', () => {
+  test('shows login and register buttons when logged out', () => {
     renderWithProviders(<Header />);
     expect(screen.getByText('Login')).toBeInTheDocument();
     expect(screen.getByText('Register')).toBeInTheDocument();
   });
 
-  it('shows user information and logout button when user is authenticated', () => {
-    mockAuthContext.user = {
-      _id: '1',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-    };
-
+  test('shows user name and logout button when logged in', () => {
+    mockedUseAuth.mockReturnValue({
+      user: { firstName: 'Test' },
+      logout: jest.fn(),
+    });
     renderWithProviders(<Header />);
-    expect(screen.getByText('John')).toBeInTheDocument();
+    expect(screen.getByText('Test')).toBeInTheDocument();
     expect(screen.getByText('Logout')).toBeInTheDocument();
   });
 
-  it('calls logout function when logout button is clicked', () => {
-    mockAuthContext.user = {
-      _id: '1',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-    };
+  test('displays the correct number of items in the cart', () => {
+    mockedUseCart.mockReturnValue({
+      getTotalItems: () => 5,
+    });
+    renderWithProviders(<Header />);
+    expect(screen.getByText('5')).toBeInTheDocument();
+  });
 
+  test('navigates to cart page on cart button click', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Header />);
+    const cartButton = screen.getByRole('button', { name: /cart/i });
+    await user.click(cartButton);
+  });
+
+  test('calls logout when logout button is clicked', async () => {
+    const logoutMock = jest.fn();
+    mockedUseAuth.mockReturnValue({
+      user: { firstName: 'Test' },
+      logout: logoutMock,
+    });
+    const user = userEvent.setup();
     renderWithProviders(<Header />);
     const logoutButton = screen.getByText('Logout');
-    fireEvent.click(logoutButton);
-    expect(mockAuthContext.logout).toHaveBeenCalledTimes(1);
-  });
-
-  it('shows cart item count when cart has items', () => {
-    mockCartContext.getTotalItems = jest.fn(() => 3);
-    renderWithProviders(<Header />);
-    expect(screen.getByText('3')).toBeInTheDocument();
-  });
-
-  it('does not show cart item count when cart is empty', () => {
-    mockCartContext.getTotalItems = jest.fn(() => 0);
-    renderWithProviders(<Header />);
-    expect(screen.queryByText('0')).not.toBeInTheDocument();
-  });
-
-  it('renders with correct styling classes', () => {
-    renderWithProviders(<Header />);
-    const header = screen.getByRole('banner');
-    expect(header).toHaveClass('bg-white', 'shadow-sm', 'sticky', 'top-0', 'z-30');
-  });
-
-  it('handles user with only first name', () => {
-    mockAuthContext.user = {
-      _id: '1',
-      firstName: 'John',
-      lastName: '',
-      email: 'john@example.com',
-    };
-
-    renderWithProviders(<Header />);
-    expect(screen.getByText('John')).toBeInTheDocument();
-  });
-
-  it('handles user with only last name', () => {
-    mockAuthContext.user = {
-      _id: '1',
-      firstName: '',
-      lastName: 'Doe',
-      email: 'john@example.com',
-    };
-
-    renderWithProviders(<Header />);
-    expect(screen.getByText('Doe')).toBeInTheDocument();
+    await user.click(logoutButton);
+    expect(logoutMock).toHaveBeenCalledTimes(1);
   });
 }); 

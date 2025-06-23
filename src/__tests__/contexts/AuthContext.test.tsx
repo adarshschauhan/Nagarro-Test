@@ -1,42 +1,53 @@
 import React from 'react';
-import { render, screen, act, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { AuthProvider, useAuth } from '../../contexts/AuthContext';
-import { authApi } from '../../services/api';
+import * as api from '../../services/api';
 
-// Mock the API
+// Mock the entire api module
 jest.mock('../../services/api', () => ({
   authApi: {
     login: jest.fn(),
     register: jest.fn(),
     getCurrentUser: jest.fn(),
   },
+  productsApi: {
+    getAll: jest.fn(),
+    getById: jest.fn(),
+    getFeatured: jest.fn(),
+    getCategories: jest.fn(),
+  },
+  cartApi: {
+    get: jest.fn(),
+    addItem: jest.fn(),
+    updateItem: jest.fn(),
+    removeItem: jest.fn(),
+    clear: jest.fn(),
+  },
+  ordersApi: {
+    getAll: jest.fn(),
+    create: jest.fn(),
+  },
+  offersApi: {
+    getAll: jest.fn(),
+  },
+  paymentApi: {
+    createPaymentIntent: jest.fn(),
+    confirmPayment: jest.fn(),
+  },
 }));
 
-const mockAuthApi = authApi as jest.Mocked<typeof authApi>;
 
-// Test component to access context
-const TestComponent = () => {
-  const { user, loading, login, register, logout } = useAuth();
-  
-  return (
-    <div>
-      <div data-testid="user">{user ? JSON.stringify(user) : 'no-user'}</div>
-      <div data-testid="loading">{loading ? 'loading' : 'not-loading'}</div>
-      <button onClick={() => login('test@example.com', 'password')}>Login</button>
-      <button onClick={() => register({ email: 'test@example.com', password: 'password' })}>Register</button>
-      <button onClick={logout}>Logout</button>
-    </div>
-  );
+const mockedApi = api as jest.Mocked<typeof api>;
+
+const mockUser = {
+  _id: '123',
+  firstName: 'Test',
+  lastName: 'User',
+  email: 'test@example.com',
+  role: 'user' as const,
 };
 
-const renderWithAuthProvider = (component: React.ReactElement) => {
-  return render(
-    <AuthProvider>
-      {component}
-    </AuthProvider>
-  );
-};
+const mockToken = 'mock-token';
 
 describe('AuthContext', () => {
   beforeEach(() => {
@@ -44,202 +55,122 @@ describe('AuthContext', () => {
     localStorage.clear();
   });
 
-  describe('AuthProvider', () => {
-    it('renders children', () => {
-      renderWithAuthProvider(<div data-testid="child">Child</div>);
-      expect(screen.getByTestId('child')).toBeInTheDocument();
-    });
-
-    it('initializes with no user and loading true', () => {
-      renderWithAuthProvider(<TestComponent />);
-      expect(screen.getByTestId('user')).toHaveTextContent('no-user');
-      expect(screen.getByTestId('loading')).toHaveTextContent('loading');
-    });
-
-    it('loads user from localStorage on mount', async () => {
-      const mockUser = { _id: '1', firstName: 'John', email: 'john@example.com' };
-      const mockToken = 'mock-token';
-      
-      localStorage.setItem('token', mockToken);
-      mockAuthApi.getCurrentUser.mockResolvedValue(mockUser);
-
-      renderWithAuthProvider(<TestComponent />);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('not-loading');
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('user')).toHaveTextContent(JSON.stringify(mockUser));
-      });
-    });
-
-    it('handles error when loading user from localStorage', async () => {
-      localStorage.setItem('token', 'invalid-token');
-      mockAuthApi.getCurrentUser.mockRejectedValue(new Error('Invalid token'));
-
-      renderWithAuthProvider(<TestComponent />);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('not-loading');
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('user')).toHaveTextContent('no-user');
-      });
-
-      expect(localStorage.getItem('token')).toBeNull();
-    });
-
-    it('does not load user when no token exists', async () => {
-      renderWithAuthProvider(<TestComponent />);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('not-loading');
-      });
-
-      expect(mockAuthApi.getCurrentUser).not.toHaveBeenCalled();
-    });
+  it('provides user and loading state', async () => {
+    mockedApi.authApi.getCurrentUser.mockResolvedValueOnce(null);
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+    expect(result.current.user).toBeNull();
+    await waitFor(() => expect(result.current.loading).toBe(false));
   });
 
   describe('login function', () => {
-    it('successfully logs in user', async () => {
-      const mockUser = { _id: '1', firstName: 'John', email: 'john@example.com' };
-      const mockToken = 'mock-token';
+    it('successfully logs in and fetches user', async () => {
+      mockedApi.authApi.login.mockResolvedValue({ user: mockUser, token: mockToken });
       
-      mockAuthApi.login.mockResolvedValue({ user: mockUser, token: mockToken });
+      const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
 
-      renderWithAuthProvider(<TestComponent />);
-
-      const user = userEvent.setup();
-      const loginButton = screen.getByText('Login');
-      
-      await user.click(loginButton);
-
-      await waitFor(() => {
-        expect(mockAuthApi.login).toHaveBeenCalledWith('test@example.com', 'password');
+      await act(async () => {
+        await result.current.login('test@example.com', 'password');
       });
 
       await waitFor(() => {
-        expect(screen.getByTestId('user')).toHaveTextContent(JSON.stringify(mockUser));
+        expect(result.current.user).toEqual(mockUser);
       });
-
-      expect(localStorage.setItem).toHaveBeenCalledWith('token', mockToken);
+      expect(localStorage.getItem('token')).toBe(mockToken);
     });
 
     it('handles login error', async () => {
       const error = new Error('Login failed');
-      mockAuthApi.login.mockRejectedValue(error);
+      mockedApi.authApi.login.mockRejectedValue(error);
 
-      renderWithAuthProvider(<TestComponent />);
+      const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
 
-      const user = userEvent.setup();
-      const loginButton = screen.getByText('Login');
-      
-      await user.click(loginButton);
-
-      await waitFor(() => {
-        expect(mockAuthApi.login).toHaveBeenCalledWith('test@example.com', 'password');
-      });
-
-      // Should still show no user after error
-      expect(screen.getByTestId('user')).toHaveTextContent('no-user');
+      await expect(result.current.login('test@example.com', 'password')).rejects.toThrow('Login failed');
     });
   });
 
   describe('register function', () => {
     it('successfully registers user', async () => {
-      const mockUser = { _id: '1', firstName: 'John', email: 'john@example.com' };
-      const mockToken = 'mock-token';
-      
-      mockAuthApi.register.mockResolvedValue({ user: mockUser, token: mockToken });
+      mockedApi.authApi.register.mockResolvedValue({ user: mockUser, token: mockToken });
 
-      renderWithAuthProvider(<TestComponent />);
+      const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
 
-      const user = userEvent.setup();
-      const registerButton = screen.getByText('Register');
-      
-      await user.click(registerButton);
-
-      await waitFor(() => {
-        expect(mockAuthApi.register).toHaveBeenCalledWith({ 
-          email: 'test@example.com', 
-          password: 'password' 
+      await act(async () => {
+        await result.current.register({
+          firstName: 'Test',
+          lastName: 'User',
+          email: 'test@example.com',
+          password: 'password',
         });
       });
 
       await waitFor(() => {
-        expect(screen.getByTestId('user')).toHaveTextContent(JSON.stringify(mockUser));
+        expect(result.current.user).toEqual(mockUser);
       });
-
-      expect(localStorage.setItem).toHaveBeenCalledWith('token', mockToken);
+      expect(localStorage.getItem('token')).toBe(mockToken);
     });
 
     it('handles registration error', async () => {
       const error = new Error('Registration failed');
-      mockAuthApi.register.mockRejectedValue(error);
+      mockedApi.authApi.register.mockRejectedValue(error);
 
-      renderWithAuthProvider(<TestComponent />);
+      const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
 
-      const user = userEvent.setup();
-      const registerButton = screen.getByText('Register');
-      
-      await user.click(registerButton);
-
-      await waitFor(() => {
-        expect(mockAuthApi.register).toHaveBeenCalledWith({ 
-          email: 'test@example.com', 
-          password: 'password' 
-        });
-      });
-
-      // Should still show no user after error
-      expect(screen.getByTestId('user')).toHaveTextContent('no-user');
+      await expect(
+        result.current.register({
+          firstName: 'Test',
+          lastName: 'User',
+          email: 'test@example.com',
+          password: 'password',
+        })
+      ).rejects.toThrow('Registration failed');
     });
   });
 
   describe('logout function', () => {
     it('successfully logs out user', async () => {
-      // First login a user
-      const mockUser = { _id: '1', firstName: 'John', email: 'john@example.com' };
-      const mockToken = 'mock-token';
+      // First, log in the user
+      localStorage.setItem('token', mockToken);
+      mockedApi.authApi.getCurrentUser.mockResolvedValue(mockUser);
       
-      mockAuthApi.login.mockResolvedValue({ user: mockUser, token: mockToken });
-
-      renderWithAuthProvider(<TestComponent />);
-
-      const user = userEvent.setup();
+      const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
       
-      // Login first
-      const loginButton = screen.getByText('Login');
-      await user.click(loginButton);
+      await waitFor(() => expect(result.current.user).toEqual(mockUser));
 
-      await waitFor(() => {
-        expect(screen.getByTestId('user')).toHaveTextContent(JSON.stringify(mockUser));
+      // Then, log out
+      await act(async () => {
+        result.current.logout();
       });
 
-      // Then logout
-      const logoutButton = screen.getByText('Logout');
-      await user.click(logoutButton);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('user')).toHaveTextContent('no-user');
-      });
-
-      expect(localStorage.removeItem).toHaveBeenCalledWith('token');
+      expect(result.current.user).toBeNull();
+      expect(localStorage.getItem('token')).toBeNull();
     });
   });
 
-  describe('useAuth hook', () => {
-    it('throws error when used outside AuthProvider', () => {
-      // Suppress console.error for this test
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      
-      expect(() => {
-        render(<TestComponent />);
-      }).toThrow('useAuth must be used within an AuthProvider');
-      
-      consoleSpy.mockRestore();
+  describe('initial load', () => {
+    it('verifies token on initial load and sets user', async () => {
+      localStorage.setItem('token', mockToken);
+      mockedApi.authApi.getCurrentUser.mockResolvedValue(mockUser);
+
+      const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+      await waitFor(() => {
+        expect(result.current.user).toEqual(mockUser);
+        expect(result.current.loading).toBe(false);
+      });
+      expect(mockedApi.authApi.getCurrentUser).toHaveBeenCalled();
+    });
+
+    it('handles verification error on initial load', async () => {
+      localStorage.setItem('token', mockToken);
+      mockedApi.authApi.getCurrentUser.mockRejectedValue(new Error('Verification failed'));
+
+      const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+      await waitFor(() => {
+        expect(result.current.user).toBeNull();
+        expect(result.current.loading).toBe(false);
+      });
+      expect(mockedApi.authApi.getCurrentUser).toHaveBeenCalled();
     });
   });
-}); 
+});

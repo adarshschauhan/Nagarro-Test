@@ -20,7 +20,7 @@ const Header: React.FC = () => {
           <Link to="/offers" className="hover:text-primary-600 font-medium">Offers</Link>
         </nav>
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/cart')} className="relative">
+          <button onClick={() => navigate('/cart')} className="relative" aria-label="cart">
             <ShoppingCartIcon className="h-7 w-7 text-primary-700" />
             {itemCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-accent-600 text-white text-xs rounded-full px-1.5 py-0.5">

@@ -282,20 +282,20 @@ export const mockUser: User = {
 
 // Mock Cart Data
 export const mockCart: CartItem[] = [
-  {
-    _id: 'cart1',
-    product: mockProducts[0],
-    quantity: 1,
-    selectedColor: 'Black',
-    selectedSize: 'One Size'
-  },
-  {
-    _id: 'cart2',
-    product: mockProducts[2],
-    quantity: 2,
-    selectedColor: 'Navy',
-    selectedSize: 'M'
-  }
+  // {
+  //   _id: 'cart1',
+  //   product: mockProducts[0],
+  //   quantity: 1,
+  //   selectedColor: 'Black',
+  //   selectedSize: 'One Size'
+  // },
+  // {
+  //   _id: 'cart2',
+  //   product: mockProducts[2],
+  //   quantity: 2,
+  //   selectedColor: 'Navy',
+  //   selectedSize: 'M'
+  // }
 ];
 
 // Mock Orders Data
